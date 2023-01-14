@@ -1,0 +1,46 @@
+Type Guard - это функция, которая:
+1. имеет тип
+function Название(ИмяПараметра: ТипПараметра): ТоЖеСамоеИмяПараметра is ТипВКоторыйКонвертируем {
+например
+function isString(x: number | string): x is string {
+
+2. Возвращает boolean: true или false
+
+3. В теле функции проверяет параметр "ИмяПараметра" и если параметр является на самом деле ТипВКоторыйКонвертируем, то возвращает true, если это КакойтоДРугойТип, то возвращает false. Например функция выше принимает или string или number, и если x является на самом деле string, а не number, то функция вернет true, а если x является на самом деле number, а не string функция вернет false. Варианты проверок:
+- (x as string).toLowerCase !== undefined - проверка на существование метода
+- typeof x === 'string' - проверка с помощьюу typeof
+и другие проверки.
+
+4. При вызове функции внутри if сконвертирует значение в ТипВКоторыйКонвертируем
+if (isString(x)) { //тут x может быть хоть чем, хоть any. Мы не можем вызвать toLowerCase тут, typescript выдаст ошибку
+    x.toLowerCase() //тут typescript сконвертирует x в string, toLowerCase доступен
+}
+
+5. Можно конвертировать элементы массива в методах массива
+let messages: (number | string)[] = [1, 'peter', 2, 'andrew']
+let convertedMessages = messages.filter(isString); //тут тип convertedMessages будет string[]
+
+
+Задача:
+function makeTest1(): string | number {
+    return 'peter';
+}
+let test1: number | string = makeTest1();
+let test2: (string | undefined)[] = ["peter", undefined, "andrew", undefined]
+
+написать typeguard'ы:
+isString
+isNumber
+isUndefined
+В типе параметра typeguard запрещено использовать any, можно использовать объединение типов "|"
+
+2. Выполнить код:
+if (isString(test1)) { //тут ctrl+shift+p должен показать тип string | number, метод toUpperCase недоступен
+    console.log(test1.toUpperCase()) //не должно быть ошибки компиляции, метод toUpperCase доступен, при ctrl + shift + p тип должен быть string
+}
+
+3. Заменить test1 на number, проверить в isNumber
+
+4. Должны работать методы массивов:
+let result: string[] = test2.filter(isString);
+let result2: undefined[] = test2.filter(isUndefined);
